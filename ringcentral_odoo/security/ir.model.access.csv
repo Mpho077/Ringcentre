@@ -1,7 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_rc_call_log_user,rc.call.log user,model_rc_call_log,group_rc_user,1,0,0,0
-access_rc_call_log_manager,rc.call.log manager,model_rc_call_log,group_rc_manager,1,1,1,1
-access_rc_config_manager,rc.config manager,model_rc_config,group_rc_manager,1,1,1,1
-access_rc_sentiment_provider_user,rc.sentiment.provider user,model_rc_sentiment_provider,group_rc_user,1,0,0,0
-access_rc_sentiment_provider_manager,rc.sentiment.provider manager,model_rc_sentiment_provider,group_rc_manager,1,1,1,1
-access_rc_manual_sync_manager,rc.manual.sync manager,model_rc_manual_sync,group_rc_manager,1,1,1,1
