@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_rc_manual_sync_form" model="ir.ui.view">
+        <field name="name">rc.manual.sync.form</field>
+        <field name="model">rc.manual.sync</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="sync_recordings"/>
+                    <field name="sync_transcripts"/>
+                </group>
+                <footer>
+                    <button name="action_sync" string="Sync Calls" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rc_manual_sync" model="ir.actions.act_window">
+        <field name="name">Manual Sync</field>
+        <field name="res_model">rc.manual.sync</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_rc_manual_sync" name="Manual Sync" parent="menu_ringcentral_root"
+              action="action_rc_manual_sync" sequence="80" groups="base.group_system"/>
+</odoo>
