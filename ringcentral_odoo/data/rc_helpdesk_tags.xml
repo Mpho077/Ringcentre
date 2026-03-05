@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tag_negative_sentiment" model="helpdesk.tag">
+            <field name="name">Negative Call Sentiment</field>
+        </record>
+        <record id="tag_voicemail" model="helpdesk.tag">
+            <field name="name">Voicemail</field>
+        </record>
+        <record id="tag_missed_call" model="helpdesk.tag">
+            <field name="name">Missed Call</field>
+        </record>
+    </data>
+</odoo>
