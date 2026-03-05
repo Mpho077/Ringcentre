@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Call Log Form View -->
+    <record id="view_rc_call_log_form" model="ir.ui.view">
+        <field name="name">rc.call.log.form</field>
+        <field name="model">rc.call.log</field>
+        <field name="arch" type="xml">
+            <form string="Call Log">
+                <header>
+                    <button name="action_create_ticket"
+                            string="Create Ticket"
+                            type="object"
+                            class="btn-primary"
+                            invisible="ticket_id != 0"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="new,processing,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Call Details">
+                            <field name="direction"/>
+                            <field name="caller_number"/>
+                            <field name="callee_number"/>
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                            <field name="duration_display"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group string="Matching &amp; Links">
+                            <field name="partner_id"/>
+                            <field name="ticket_ref"/>
+                            <field name="rc_call_id"/>
+                            <field name="rc_extension_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Recording &amp; Transcript">
+                            <group>
+                                <group>
+                                    <field name="has_recording"/>
+                                    <field name="recording_attachment_id"
+                                           filename="recording_attachment_id"/>
+                                    <field name="recording_url" widget="url"/>
+                                </group>
+                                <group>
+                                    <field name="transcript_attachment_id"/>
+                                </group>
+                            </group>
+                            <separator string="Transcript"/>
+                            <field name="transcript" readonly="1"/>
+                        </page>
+                        <page string="Sentiment">
+                            <group>
+                                <group string="AI Analysis">
+                                    <field name="sentiment_score"/>
+                                    <field name="sentiment_label" widget="badge"
+                                           decoration-success="sentiment_label == 'positive'"
+                                           decoration-warning="sentiment_label == 'neutral'"
+                                           decoration-danger="sentiment_label == 'negative'"/>
+                                    <field name="sentiment_reason"/>
+                                    <field name="sentiment_provider_id"/>
+                                </group>
+                                <group string="Agent Review">
+                                    <field name="agent_sentiment"
+                                           widget="radio"
+                                           options="{'horizontal': true}"/>
+                                    <field name="final_sentiment" widget="badge"
+                                           decoration-success="final_sentiment == 'positive'"
+                                           decoration-warning="final_sentiment == 'neutral'"
+                                           decoration-danger="final_sentiment == 'negative'"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                            <field name="error_message" readonly="1"
+                                   invisible="state != 'failed'"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Call Log List View -->
+    <record id="view_rc_call_log_list" model="ir.ui.view">
+        <field name="name">rc.call.log.list</field>
+        <field name="model">rc.call.log</field>
+        <field name="arch" type="xml">
+            <list string="Call Log"
+                  decoration-danger="final_sentiment == 'negative'"
+                  decoration-muted="direction == 'missed'"
+                  default_order="start_time desc">
+                <field name="name"/>
+                <field name="start_time"/>
+                <field name="direction"/>
+                <field name="caller_number"/>
+                <field name="callee_number"/>
+                <field name="partner_id"/>
+                <field name="duration_display"/>
+                <field name="has_recording" widget="boolean"/>
+                <field name="sentiment_label" widget="badge"
+                       decoration-success="sentiment_label == 'positive'"
+                       decoration-warning="sentiment_label == 'neutral'"
+                       decoration-danger="sentiment_label == 'negative'"
+                       optional="show" string="AI Sentiment"/>
+                <field name="agent_sentiment" optional="hide"/>
+                <field name="final_sentiment" widget="badge"
+                       decoration-success="final_sentiment == 'positive'"
+                       decoration-warning="final_sentiment == 'neutral'"
+                       decoration-danger="final_sentiment == 'negative'"
+                       optional="show"/>
+                <field name="ticket_ref" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'new'"
+                       decoration-warning="state == 'processing'"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'failed'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Call Log Search View -->
+    <record id="view_rc_call_log_search" model="ir.ui.view">
+        <field name="name">rc.call.log.search</field>
+        <field name="model">rc.call.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="caller_number"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Call Log Action -->
+    <record id="action_rc_call_log" model="ir.actions.act_window">
+        <field name="name">Call Log</field>
+        <field name="res_model">rc.call.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Negative Calls Action (dashboard shortcut) -->
+    <record id="action_rc_negative_calls" model="ir.actions.act_window">
+        <field name="name">Negative Calls</field>
+        <field name="res_model">rc.call.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('sentiment_label', '=', 'negative')]</field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_rc_call_log"
+              name="Call Log"
+              parent="menu_ringcentral_root"
+              action="action_rc_call_log"
+              sequence="10"/>
+
+    <menuitem id="menu_rc_negative_calls"
+              name="Negative Calls"
+              parent="menu_ringcentral_root"
+              action="action_rc_negative_calls"
+              sequence="20"/>
+
+    <!-- Manual Sync Wizard -->
+    <record id="view_rc_manual_sync_form" model="ir.ui.view">
+        <field name="name">rc.manual.sync.form</field>
+        <field name="model">rc.manual.sync</field>
+        <field name="arch" type="xml">
+            <form string="Manual Call Sync">
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="sync_recordings"/>
+                    <field name="sync_transcripts"/>
+                    <field name="run_sentiment"/>
+                </group>
+                <footer>
+                    <button name="action_sync" string="Sync Calls"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rc_manual_sync" model="ir.actions.act_window">
+        <field name="name">Manual Sync</field>
+        <field name="res_model">rc.manual.sync</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_rc_manual_sync"
+              name="Manual Sync"
+              parent="menu_ringcentral_root"
+              action="action_rc_manual_sync"
+              sequence="80"
+              groups="group_rc_manager"/>
+</odoo>
