@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rc_call_log_all,rc.call.log all,model_rc_call_log,base.group_user,1,1,1,1
+access_rc_config_all,rc.config all,model_rc_config,base.group_system,1,1,1,1
+access_rc_sentiment_provider_user,rc.sentiment.provider user,model_rc_sentiment_provider,base.group_user,1,0,0,0
+access_rc_sentiment_provider_admin,rc.sentiment.provider admin,model_rc_sentiment_provider,base.group_system,1,1,1,1
+access_rc_manual_sync,rc.manual.sync all,model_rc_manual_sync,base.group_system,1,1,1,1
