@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add Call info to Helpdesk Ticket form -->
+    <record id="view_helpdesk_ticket_form_rc" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.ringcentral</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_calls"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-phone"
+                        invisible="rc_call_count == 0">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="rc_call_count"/>
+                        </span>
+                        <span class="o_stat_text">Calls</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//page[last()]" position="after">
+                <page string="Related Calls" name="rc_calls"
+                      invisible="rc_call_count == 0">
+                    <field name="rc_escalated" invisible="1"/>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not rc_escalated">
+                        <strong>⚠️ This ticket was created/escalated due to negative call sentiment.</strong>
+                    </div>
+                    <field name="rc_call_ids" readonly="1">
+                        <list default_order="start_time desc">
+                            <field name="name"/>
+                            <field name="start_time"/>
+                            <field name="direction"/>
+                            <field name="caller_number"/>
+                            <field name="duration_display"/>
+                            <field name="sentiment_label" widget="badge"
+                                   decoration-success="sentiment_label == 'positive'"
+                                   decoration-warning="sentiment_label == 'neutral'"
+                                   decoration-danger="sentiment_label == 'negative'"/>
+                            <field name="has_recording" widget="boolean"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Provider Form View -->
+    <record id="view_rc_sentiment_provider_form" model="ir.ui.view">
+        <field name="name">rc.sentiment.provider.form</field>
+        <field name="model">rc.sentiment.provider</field>
+        <field name="arch" type="xml">
+            <form string="Sentiment Provider">
+                <header>
+                    <button name="action_test_provider" string="🧪 Test With Sample"
+                            type="object" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Kopa AI"/></h1>
+                    </div>
+                    <group>
+                        <group string="Provider Setup">
+                            <field name="code" placeholder="e.g. kopa_ai"/>
+                            <field name="provider_type"/>
+                            <field name="is_default"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Authentication">
+                            <field name="api_url"
+                                   placeholder="https://api.kopa.ai/v1/analyze"/>
+                            <field name="api_key" password="True"/>
+                            <field name="api_model"
+                                   placeholder="e.g. gpt-4o, claude-sonnet-4-20250514"/>
+                            <field name="timeout"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Custom Webhook Config"
+                              invisible="provider_type != 'webhook'">
+                            <group string="Request Headers">
+                                <field name="auth_header_name"
+                                       placeholder="Authorization"/>
+                                <field name="auth_header_prefix"
+                                       placeholder="Bearer"/>
+                                <field name="custom_headers"
+                                       placeholder='{"X-Custom-Header": "value"}'/>
+                            </group>
+                            <separator string="Request Body Template"/>
+                            <p class="text-muted">
+                                JSON template for the request body sent to your AI.
+                                Use <code>{{transcript}}</code> and <code>{{model}}</code> as placeholders.
+                                Leave empty for the default format.
+                            </p>
+                            <field name="request_template"
+                                   placeholder='{
+    "model": "{{model}}",
+    "input": "{{transcript}}",
+    "task": "sentiment"
+}'/>
+                            <separator string="Response Parsing"/>
+                            <p class="text-muted">
+                                Tell us where to find the score and reason in your AI's JSON response.
+                                Use dot notation: e.g. <code>data.sentiment.score</code>
+                            </p>
+                            <group>
+                                <field name="response_score_path"
+                                       placeholder="score"/>
+                                <field name="response_reason_path"
+                                       placeholder="reason"/>
+                            </group>
+                        </page>
+                        <page string="How It Works">
+                            <div class="alert alert-info" role="alert">
+                                <h4>Connecting Any AI Provider</h4>
+                                <p><strong>For LLM APIs</strong> (Anthropic, OpenAI): Select the matching type. We handle the prompt and response parsing.</p>
+                                <p><strong>For any other AI</strong> (kopa.ai, Hugging Face, your own model): Select "Custom Webhook" and configure:</p>
+                                <ol>
+                                    <li><strong>API URL</strong> — where to POST the transcript</li>
+                                    <li><strong>Auth</strong> — header name, prefix, and API key</li>
+                                    <li><strong>Request Template</strong> — how to format the request body (use {{transcript}} placeholder)</li>
+                                    <li><strong>Response Paths</strong> — where to find the score (-1.0 to 1.0) and reason in the response</li>
+                                </ol>
+                                <p>Click <strong>"Test With Sample"</strong> to verify your configuration works.</p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Provider List View -->
+    <record id="view_rc_sentiment_provider_list" model="ir.ui.view">
+        <field name="name">rc.sentiment.provider.list</field>
+        <field name="model">rc.sentiment.provider</field>
+        <field name="arch" type="xml">
+            <list string="Sentiment Providers">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="provider_type"/>
+                <field name="api_url"/>
+                <field name="is_default" widget="boolean_toggle"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Provider Action -->
+    <record id="action_rc_sentiment_provider" model="ir.actions.act_window">
+        <field name="name">AI Providers</field>
+        <field name="res_model">rc.sentiment.provider</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_rc_sentiment_providers"
+              name="AI Providers"
+              parent="menu_ringcentral_root"
+              action="action_rc_sentiment_provider"
+              sequence="85"
+              groups="group_rc_manager"/>
+</odoo>
